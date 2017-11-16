@@ -9,7 +9,7 @@ from sklearn.externals import joblib
 @click.argument('output_path', type=click.Path(exists=False, dir_okay=False))
 def main(input_path, output_path):
     '''
-    Convert pickled RandomForestClassifier to json format with no name.
+    Convert pickled RandomForestClassifier (or any model containing many trees) to json format.
     Write the result to OUTPUT_PATH.
     '''
     log = logging.getLogger()

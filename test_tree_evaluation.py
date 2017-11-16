@@ -4,9 +4,10 @@ import numpy as np
 
 
 def evaluate_tree(clf, sample):
+    '''
+    Return the predictions from a decissiontree.
+    '''
     sample = np.ravel(sample)
-    # print(sample)
-
     threshold = clf.tree_.threshold
     attribute = clf.tree_.feature
     left = clf.tree_.children_left
@@ -21,8 +22,6 @@ def evaluate_tree(clf, sample):
         left_node = left[index]
         right_node = right[index]
 
-        # print('index {}, Split Attribute {}, node_threshold {}, value {}, left_node {}, right_node{}'
-        #         .format(index, split_attribute, node_threshold, value, left_node, right_node))
         value = sample[split_attribute]
 
         if value < node_threshold:
@@ -33,16 +32,21 @@ def evaluate_tree(clf, sample):
     return dist[index]
 
 
-X, y = load_iris(return_X_y=True)
-clf = DecisionTreeClassifier(random_state=1234)
+def main():
+    '''
+    Build simple model to test whether the evaluation algorithm is correct
+    by comparing output from evaluate_tree to output from  clf.predict_proba
+    '''
+    X, y = load_iris(return_X_y=True)
+    clf = DecisionTreeClassifier(random_state=1234)
+    clf.fit(X, y)
 
-clf.fit(X, y)
+    for i in range(150):
+        sample = X[i].reshape(1, -1)
+        p = clf.predict_proba(sample)
+        p_m = evaluate_tree(clf, sample)
+        assert p.argmax() == p_m.argmax(), 'prediction from eval method should be equal to the sklearn one'
 
-for i in range(150):
-    sample = X[i].reshape(1, -1)
-    print(sample)
-    p = clf.predict_proba(sample)
-    p_m = evaluate_tree(clf, sample)
-    print(p)
 
-    assert p.argmax() == p_m.argmax()
+if __name__ == '__main__':
+    main()
